@@ -7,36 +7,44 @@
 page_navbar(
   
   # -- footer
-  fillable = FALSE,
-  footer = p(style = "font-size:9pt;margin-top:20px;", "© 2025 Philippe Peret"),
+  fillable = TRUE,
+  footer = p(style = "font-size:9pt;margin-top:20px;color:#FFF;", "© 2025 Philippe Peret"),
   
   # -- header / css
-  # header = tags$link(rel = "stylesheet", type = "text/css", href = "./css/style.css"),
+  header = tags$link(rel = "stylesheet", type = "text/css", href = "./css/base.css"),
   
   # -- theme
   theme = bs_theme(
-    bg = "grey-90",
-    fg = "black",
     primary = "orange",
     secondary = "#ececec",
     base_font = font_google("Quicksand")),
   
   # -- title
-  title = "App Title",
+  title = "Calypso",
   
-  # -- Observations
-  nav_panel(title = "Nav",
+  # -- search
+  nav_panel(title = "Rechercher",
             class = "p-5",
             
             # -- content
-            p("Something goes here")),
+            p("Calypso explore le répertoire SIRENE."),
+            
+            search_ui("search")),
   
   
-  # -- About
-  nav_panel(title = "Nav",
+  # -- explore
+  nav_panel(title = "Explorer",
             class = "p-5",
             
             # -- content
-            p("Something goes here"))
+            p("Something goes here too")),
+  
+  
+  # -- about
+  nav_panel(title = "A propos",
+            class = "p-5",
+            
+            # -- content
+            p("Calypso explore le répertoire SIRENE."))
   
 )

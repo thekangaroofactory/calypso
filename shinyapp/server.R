@@ -19,5 +19,7 @@ function(input, output, session) {
   # --------------------------------------
   # Something_cool_goes_here
   
+  search_Server(id = "search")
+  
   
 }
