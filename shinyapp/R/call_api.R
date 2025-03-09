@@ -1,6 +1,6 @@
 
 
-call_api <- function(service = c("siren", "siret"), value = NULL, notify = TRUE){
+call_api <- function(service = c("informations", "siren", "siret"), value = NULL, notify = TRUE){
   
   # -- check argument
   service <- match.arg(service)
@@ -13,7 +13,10 @@ call_api <- function(service = c("siren", "siret"), value = NULL, notify = TRUE)
   
   # -- prepare target url
   target_url <- paste(root_url, service, sep = "/")
-  target_url <- paste(target_url, value, sep = "/")
+  
+  if(!is.null(value))
+    target_url <- paste(target_url, value, sep = "/")
+  
   # target_url <- paste0(target_url, "?q=nomUniteLegale:'PERET'")
   cat("Ready to call URL", target_url, "\n")
   
