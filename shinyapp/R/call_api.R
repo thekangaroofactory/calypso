@@ -1,6 +1,6 @@
 
 
-call_api <- function(service = c("siren", "siret"), value = NULL){
+call_api <- function(service = c("siren", "siret"), value = NULL, notify = TRUE){
   
   # -- check argument
   service <- match.arg(service)
@@ -14,7 +14,8 @@ call_api <- function(service = c("siren", "siret"), value = NULL){
   # -- prepare target url
   target_url <- paste(root_url, service, sep = "/")
   target_url <- paste(target_url, value, sep = "/")
-  cat("Ready to download from", target_url, "\n")
+  # target_url <- paste0(target_url, "?q=nomUniteLegale:'PERET'")
+  cat("Ready to call URL", target_url, "\n")
   
   # -- call API
   tryCatch({
@@ -25,7 +26,7 @@ call_api <- function(service = c("siren", "siret"), value = NULL){
                                              'X-INSEE-Api-Key-Integration' = Sys.getenv("API_KEY")))
     
     # -- check response size
-    cat("Download done, size =", object.size(response) ,"\n")
+    cat(">> Done, response size =", object.size(response) ,"\n")
     
     # -- parse to R object
     response <- jsonlite::fromJSON(response)
@@ -36,6 +37,29 @@ call_api <- function(service = c("siren", "siret"), value = NULL){
   error = function(e) e,
   
   # -- return
-  finally = ifelse(exists("response"), response, NULL))
+  finally = {
+    
+    # -- check
+    if(exists("response")){
+      
+      cat("Response status =", response$header$statut, "\n")
+      
+      # -- check status
+      if(response$header$statut == 200)
+        response
+      
+      else {
+        
+        cat("Message =", response$header$message, "\n")
+        
+        if(notify)
+          switch(as.character(response$header$statut),
+                 "404" = showNotification(response$header$message))
+        
+        return(NULL)}
+      
+    } else NULL
+    
+  })
   
 }
