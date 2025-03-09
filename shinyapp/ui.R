@@ -27,9 +27,15 @@ page_navbar(
             class = "p-5",
             
             # -- content
-            p("Calypso explore le répertoire SIRENE."),
+            p("Calypso effectue des recherches dans le répertoire SIRENE."),
+            p("Cette fonctionalité est basée sur l'appel en temps réel à l'API Sirene publiée par l'INSEE.", br(),
+            "La recherche est limitée à 20 résultats. Plus d'information [ici]."),
             
-            search_ui("search")),
+            search_health_ui("search"),
+            
+            search_ui("search"),
+            
+            searh_result_ui("search")),
   
   
   # -- explore
