@@ -1,30 +1,16 @@
 
 
-call_api <- function(service = c("informations", "siren", "siret"), value = NULL, notify = TRUE){
+call_api <- function(uri, notify = TRUE){
   
-  # -- check argument
-  service <- match.arg(service)
-  
-  # -- init url & check
-  root_url <- Sys.getenv("API_URL")
-  if(root_url == ''){
-    message("Error: environment variable API_URL is not defined")
-    return(NULL)}
-  
-  # -- prepare target url
-  target_url <- paste(root_url, service, sep = "/")
-  
-  if(!is.null(value))
-    target_url <- paste(target_url, value, sep = "/")
-  
-  # target_url <- paste0(target_url, "?q=nomUniteLegale:'PERET'")
-  cat("Ready to call URL", target_url, "\n")
+  cat("Ready to call external API \n")
+  if(DEBUG)
+    cat("Target URI =", uri, "\n")
   
   # -- call API
   tryCatch({
     
     # -- call
-    response <- RCurl::getURL(target_url,
+    response <- RCurl::getURL(uri,
                               httpheader = c(Accept = "application/json", 
                                              'X-INSEE-Api-Key-Integration' = Sys.getenv("API_KEY")))
     
