@@ -15,7 +15,7 @@ search_ui <- function(id){
     
     radioButtons(inputId = ns("search_type"),
                  label = "Rechercher par :",
-                 choices = c("SIREN" = "siren", "SIRET" = "siret", "Nom / dénomination" = "name", "Commune & activité" = "city")),
+                 choices = c("SIREN" = "siren", "SIRET" = "siret", "Nom / prénom" = "name", "Dénomination" = "company")),
   
     uiOutput(ns("search_form")),
     
