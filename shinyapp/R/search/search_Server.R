@@ -27,8 +27,9 @@ search_Server <- function(id) {
     # --------------------------------------------------------------------------
     
     # -- check service status
-    service_health <- call_api()
+    service_health <- call_api(uri = build_uri())
     
+    # -- output
     output$service_health <- renderUI(
     
       if(service_health$header$statut == 200)
@@ -58,27 +59,23 @@ search_Server <- function(id) {
           textInput(inputId = ns("firstname"),
                     label = "Prénom (facultatif)"))
       
-      # -- city
-      else
-        tagList(
-          textInput(inputId = ns("city"),
-                    label = "Commune"),
-          textInput(inputId = ns("activity"),
-                    label = "Code activité (facultatif)"))) |> bindEvent(input$search_type)
+      else if(input$search_type == "company")
+        textInput(inputId = ns("company_name"),
+                  label = "Dénomination")) |> bindEvent(input$search_type)
     
     
     # -- observe button
     observeEvent(input$search, {
       
       # -- check inputs
-      req(isTruthy(input$number) || isTruthy(input$lastname) || isTruthy(input$city))
+      req(isTruthy(input$number) || isTruthy(input$lastname) || isTruthy(input$company_name))
       cat("New value siren =", input$number, "\n")
       
       # -- check values
       if(input$search_type == "siren"){
         if(nchar(input$number) == 9){
           if(!is.na(as.numeric(input$number)))
-            response(call_api(service = "siren", value = input$number))
+            response(call_api(uri = build_uri(service = "siren", number = input$number)))
           else
             cat("SIREN number should only contain numeric characters \n")
         }
@@ -88,12 +85,20 @@ search_Server <- function(id) {
       } else if(input$search_type == "siret"){
         if(nchar(input$number) == 14){
           if(!is.na(as.numeric(input$number)))
-            response(call_api(service = "siret", value = input$number))
+            response(call_api(uri = build_uri(service = "siret", number = input$number)))
           else
             cat("SIRET number should only contain numeric characters \n")
         }
         else
           cat("SIRET number should be 14 digits \n")
+        
+      } else if(input$search_type == "name") {
+        
+        response(call_api(uri = build_uri(service = "siren", lastname = input$lastname, firstname = input$firstname)))
+
+      } else if(input$search_type == "company") {
+        
+        response(call_api(uri = build_uri(service = "siren", company = input$company_name)))
         
       }
         
@@ -103,33 +108,12 @@ search_Server <- function(id) {
     # -- observer reactiveVal
     output$result <- DT::renderDT({
       
-      # -- get content
-      x <- response()
+      cat("New response available, updating output \n")
       
-      # -- build df to display
-      if("uniteLegale" %in% names(x))
-        
-        data.frame(
-          "siren" = x$uniteLegale$siren,
-          "nom" = x$uniteLegale$periodesUniteLegale[x$uniteLegale$nombrePeriodesUniteLegale, "nomUniteLegale"],
-          "prenom" = x$uniteLegale$prenom1UniteLegale,
-          "creation" = x$uniteLegale$dateCreationUniteLegale,
-          "mise à jour" = x$uniteLegale$dateDernierTraitementUniteLegale,
-          "activité" = x$uniteLegale$periodesUniteLegale[x$uniteLegale$nombrePeriodesUniteLegale, "activitePrincipaleUniteLegale"])
+      # -- get content & return
+      dt_from_response(response())
       
-      else if("etablissement" %in% names(x))
-        
-        data.frame(
-          "siren" = x$etablissement$siren,
-          "siret" = x$etablissement$siret,
-          "nom" = x$etablissement$uniteLegale$nomUniteLegale,
-          "prenom" = x$etablissement$uniteLegale$prenom1UniteLegale,
-          "creation" = x$etablissement$dateCreationEtablissement,
-          "mise à jour" = x$etablissement$dateDernierTraitementEtablissement,
-          "activité" = x$etablissement$uniteLegale$activitePrincipaleUniteLegale)
-      
-    })
-    
+    }, options = list(pageLength = 5))
     
   })
 }
