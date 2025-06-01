@@ -31,12 +31,15 @@ search_Server <- function(id) {
     
     # -- output
     output$service_health <- renderUI(
-    
-      if(service_health$header$statut == 200)
-        p("Etat du service :", ifelse(service_health$etatService == "UP", "OK", "KO"), br(), 
-          "Version :", service_health$versionService)
-      else
-        p("Etat du service : KO"))
+      
+      card(
+        card_header("API Sirene"),
+        
+        if(service_health$header$statut == 200)
+          div("Etat du service :", if(service_health$etatService == "UP") icon("square-check") else icon("triangle-exclamation", style = "color: red"), br(), 
+              "Version :", service_health$versionService)
+        else
+          p("Etat du service : KO")))
     
     
     # --------------------------------------------------------------------------
@@ -105,15 +108,25 @@ search_Server <- function(id) {
     })
     
     
-    # -- observer reactiveVal
-    output$result <- DT::renderDT({
+    # -- Input validation
+    output$validation <- renderUI(
+      validate(
+        if(input$search_type == "siren") need(nchar(input$number) == 9, 'Le numéro de SIREN doit contenir 9 chiffres!'),
+        if(input$search_type == "siret") need(nchar(input$number) == 14, 'Le numéro de SIRET doit contenir 14 chiffres!')))
+    
+    
+    # -- Search result
+    output$search_result <- renderUI({
+
+      cat("New response available, updating search result \n")
+
+      # -- get response as a df      
+      df_result <- dt_from_response(response())
       
-      cat("New response available, updating output \n")
+      # -- build cards
+      lapply(df_result$siren, function(x) search_result_card(df_result[df_result$siren == x, ]))
       
-      # -- get content & return
-      dt_from_response(response())
-      
-    }, options = list(pageLength = 5))
+    })
     
   })
 }
