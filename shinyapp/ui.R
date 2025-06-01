@@ -7,7 +7,7 @@
 page_navbar(
   
   # -- footer
-  fillable = TRUE,
+  #fillable = TRUE,
   footer = p(style = "font-size:9pt;margin-top:20px;margin-left:20px;color:#FFF;", "© 2025 Philippe Peret"),
   
   # -- header / css
@@ -27,9 +27,11 @@ page_navbar(
             class = "p-5",
             
             layout_column_wrap(
+              fill = FALSE,
               
               # -- card
               card(
+                fill = FALSE,
                 card_header("Présentation"),
                 
                 # -- content
@@ -43,7 +45,10 @@ page_navbar(
               
               search_health_ui("search")),
             
-            search_ui("search"),
+            card(
+              fill = FALSE,
+              card_header("Recherche"),
+              search_ui("search")),
             
             searh_result_ui("search")),
   
