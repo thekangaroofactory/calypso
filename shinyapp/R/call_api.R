@@ -23,7 +23,8 @@ call_api <- function(uri, notify = TRUE){
   },
   
   # -- error 
-  error = function(e) e,
+  error = function(e) {
+    message(e)},
   
   # -- return
   finally = {
@@ -47,7 +48,13 @@ call_api <- function(uri, notify = TRUE){
         
         return(NULL)}
       
-    } else NULL
+    } else {
+      
+      if(DEBUG)
+        cat("Returning NULL \n")
+      
+      NULL
+    }
     
   })
   
